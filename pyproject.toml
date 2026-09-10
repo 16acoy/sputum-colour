@@ -1,0 +1,79 @@
+[project]
+name = "sputum-colour"
+version = "0.1.0"
+description = "TBC"
+authors = [
+    { name = "Amelie Coy", email = "coyamelie16@gmail.com" }
+]
+readme = "README.md"
+keywords = ["python", "package"]
+requires-python = ">=3.13"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.4.0",
+    "mypy",
+    "nbstripout>=0.9.1",
+    "ruff",
+    "bandit",
+]
+
+[build-system]
+requires = ["uv_build>=0.12.12,<0.13"]
+build-backend = "uv_build"
+
+#######
+# TOOLS
+#######
+
+# TOOL: uv build-backend
+########################
+[tool.uv.build-backend]
+module-name = "sputum_colour"
+
+
+# TOOL: ruff
+############
+[tool.ruff]
+src = ["src"]
+fix = true
+indent-width = 4
+line-length = 88
+target-version = "py313"
+
+[tool.ruff.format]
+docstring-code-format = true
+
+[tool.ruff.lint]
+select = [
+  # pycodestyle
+  "E",
+  # Pyflakes
+  "F",
+  # pyupgrade
+  "UP",
+  # flake8-bugbear
+  "B",
+  # flake8-simplify
+  "SIM",
+  # isort
+  "I",
+  # pydocstyle
+  "D",
+]
+# D104: Ignore rule requiring public package docstrings
+# D107: Ignoring rule that states __init__ methods
+# must have a docstring. The Google docstring
+# standard allows __init__ docstrings at class
+# level or within __init__, but not both:
+# https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html
+ignore = ["D104", "D107"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+# TOOL: bandit
+##############
+[tool.bandit]
+targets = ["src"]

@@ -1,0 +1,44 @@
+# https://pre-commit.com
+# https://pre-commit.com/hooks.html
+
+default_language_version:
+  python: python3.13
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: 'v6.0.0'
+    hooks:
+      - id: check-added-large-files
+      - id: check-case-conflict
+      - id: check-merge-conflict
+      - id: check-toml
+      - id: check-yaml
+      - id: debug-statements
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: 'v0.15.21'
+    hooks:
+      - id: ruff-format
+        args: [ --config, pyproject.toml, --target-version=py313 ]
+
+  - repo: https://github.com/PyCQA/bandit
+    rev: '1.9.4'
+    hooks:
+    - id: bandit
+      alias: "bandit"
+      name: "bandit"
+      args: ["-c", "pyproject.toml"]
+      exclude: ^tests/
+      additional_dependencies: [".[toml]"]
+    - id: bandit
+      alias: "bandit-tests"
+      name: "bandit-tests"
+      args: ["-c", "pyproject.toml", "-ll"]
+      files: ^tests/
+      additional_dependencies: [".[toml]"]
+
+  - repo: https://github.com/kynan/nbstripout
+    rev: 0.9.1
+    hooks:
+      - id: nbstripout
