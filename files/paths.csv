@@ -1,0 +1,11 @@
+path_type,path
+target_image_raw,/Users/ameliecoy/Library/CloudStorage/OneDrive-TheUniversityofManchester/Sputum/example-images/target-image/target-image.jpeg
+target_tube_bounding_box_ann,/Users/ameliecoy/Library/CloudStorage/OneDrive-TheUniversityofManchester/Sputum/labelled-rois/target-masks/target-masks-1_json.json
+target_roi_ann,/Users/ameliecoy/Library/CloudStorage/OneDrive-TheUniversityofManchester/Sputum/labelled-rois/target-masks/target-masks-2_json.json
+rg_photos,/Users/ameliecoy/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofManchester/Cheuk ning sharon Chau - Sputum Photos/RG Sputum photos
+jm_photos,/Users/ameliecoy/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofManchester/Cheuk ning sharon Chau - Sputum Photos/JM Sputum photos
+qub_photos,/Users/ameliecoy/Library/CloudStorage/OneDrive-SharedLibraries-TheUniversityofManchester/Cheuk ning sharon Chau - Sputum Photos/QUB Sputum photos/Sputum_Imaged_20102026
+jm_patient_ids,/Users/ameliecoy/Library/CloudStorage/OneDrive-TheUniversityofManchester/Sputum/patient-ids/JM_patients_csv.csv
+rg_roi_labels,/Users/ameliecoy/Library/CloudStorage/OneDrive-TheUniversityofManchester/Sputum/labelled-rois/RG_annotated.json
+jm_roi_labels,/Users/ameliecoy/Library/CloudStorage/OneDrive-TheUniversityofManchester/Sputum/labelled-rois/JM_annotated.json
+qub_roi_labels,/Users/ameliecoy/Library/CloudStorage/OneDrive-TheUniversityofManchester/Sputum/labelled-rois/QUB_annotated.json
