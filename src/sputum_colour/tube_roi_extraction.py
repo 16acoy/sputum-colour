@@ -183,7 +183,7 @@ def plot_valid_lines(image, lines, key_pairs_valid):
                 thickness=2,
             )
 
-    ax[0].imshow(output_img)
+    ax[0].imshow(cv2.cvtColor(output_img, cv2.COLOR_BGR2RGB))
     ax[0].set_title("Valid lines (v or h)")
 
     img = np.zeros((4032, 3024), dtype=np.uint8)

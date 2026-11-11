@@ -289,7 +289,6 @@ def data_collection():
             src_image, src_image_grey = imread_compatible(f"{dir_path}/{filename}")
 
             h, w, channels = src_image.shape
-            print(h, w)
             src_image_resized = resize_image_to_ref(src_image, h_target, w_target)
             src_image_grey_resized = resize_image_to_ref(
                 src_image_grey, h_target, w_target

@@ -38,4 +38,5 @@ START.md
 .here
 **/.DS_Store
 results/
+results_mini/
 dvc.yaml

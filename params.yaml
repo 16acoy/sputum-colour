@@ -1,0 +1,39 @@
+sample_range: None
+seed: 16
+results_dir: "/Users/ameliecoy/GitRepos/sputum-colour/results"
+
+reg_method: None
+crop: True
+descriptor_type: "ORB"
+orb_fast_n: None
+orb_fast_threshold: None
+orb_harris_k: None
+feature_match_max_distance: None
+feature_match_max_ratio: None
+feature_match_cross_check: None
+ransac_min_samples: None
+ransac_residual_threshold: None
+ransac_max_trials: None
+warp_order: None
+
+
+blur_ksize: 5
+edge_detector_type: "Canny"
+canny_L2gradient: None
+canny_threshold1: 40
+canny_threshold2: 100
+canny_aperture_size: None
+dog_param1: None
+hough_shape: "lines"
+hough_line_rho: 1.0
+hough_line_theta: 0.017453292519943295
+hough_line_threshold: 50
+hough_line_min_line_length: 40
+hough_line_max_line_gap: 25
+hough_circle_param1: None
+orientation_tolerance_angles: [[70, 110], [160, 20]]
+test_tube_vert_t_low: 240
+test_tube_vert_t_high: 265
+test_tube_hor_t_low: 950
+test_tube_hor_t_high: 975
+valid_line_filtering_method: 'first'
