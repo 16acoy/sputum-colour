@@ -1,7 +1,10 @@
 import cv2
 import matplotlib.pyplot as plt
 
+from sputum_colour.performance import monitored
 
+
+@monitored
 def edge_detect(
     image,
     blur_ksize,
@@ -56,6 +59,7 @@ def edge_detect(
     return edge_only_image
 
 
+@monitored
 def hough_detect_for_test_tube(
     edge_only_image,
     rough_mask,

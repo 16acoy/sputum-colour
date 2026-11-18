@@ -17,4 +17,13 @@ from sputum_colour import tbc
 - The notebooks remain the primary consumers and examples of the package APIs.
 
 
+## Performance diagnostics
+
+Pipeline stages log operation timings and memory diagnostics through the
+`performance.log` file in the `results_dir` passed to each stage's `main`
+function. Per-image stage logs include nested operation timings; Python-traced
+allocation peaks are reported for outer scopes, while nested scopes report
+current allocation deltas. Process memory is reported as the process RSS
+high-water mark and its increase during each operation.
+
 ## Modules

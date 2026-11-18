@@ -7,7 +7,10 @@ from skimage.transform import ProjectiveTransform, warp
 from skimage.util import crop, img_as_ubyte
 from skimage.morphology import dilation, closing
 
+from sputum_colour.performance import monitored
 
+
+@monitored
 def detect_features(
     descriptor_type,
     image,
@@ -66,6 +69,7 @@ def detect_features(
     return valid_descriptors, valid_keypoints
 
 
+@monitored
 def match_features(src_descriptors, dst_descriptors, src_keypoints, dst_keypoints):
     matches = match_descriptors(
         src_descriptors, dst_descriptors, max_distance=128, cross_check=True
@@ -83,6 +87,7 @@ def match_features(src_descriptors, dst_descriptors, src_keypoints, dst_keypoint
     return src_matches, dst_matches, matches, avg_num_of_matches_per_dst_keypoint
 
 
+@monitored
 def check_feature_matches(src_image, dst_image, matches, src_keypoints, dst_keypoints):
 
     # Plot keypoints and matches
@@ -102,19 +107,21 @@ def check_feature_matches(src_image, dst_image, matches, src_keypoints, dst_keyp
     return fig
 
 
+@monitored
 def compute_transformation(src_matches, dst_matches, seed):
     transform_model, inliers = ransac(
         (src_matches, dst_matches),
         ProjectiveTransform,
         min_samples=4,
-        residual_threshold=12,
-        max_trials=1000,
+        residual_threshold=1,
+        max_trials=2000,
         rng=seed,
     )
 
     return transform_model, inliers
 
 
+@monitored
 def transform_image(transform_model, image1, image2):
 
     transformed_image = warp(
@@ -130,6 +137,7 @@ def transform_image(transform_model, image1, image2):
 ##################
 
 
+@monitored
 def pre_process_image(image):
     """
     closed = closing(image)
@@ -152,6 +160,7 @@ def pre_process_image(image):
     return blurred
 
 
+@monitored
 def feature_match(
     src_image,
     dst_image,
@@ -268,6 +277,7 @@ def feature_match(
     )
 
 
+@monitored
 def feature_match_with_crop(
     src_image,
     dst_image,
@@ -399,9 +409,24 @@ def feature_match_with_crop(
     )
 
 
+@monitored
 def transform(src_matches, dst_matches, src_image, dst_image, seed):
     """Transforms the COLOUR image using the defined projective transform model"""
     transform_model, inliers = compute_transformation(src_matches, dst_matches, seed)
+
+    cv_src = src_matches[:, [1, 0]].astype(np.float32)
+    cv_dst = dst_matches[:, [1, 0]].astype(np.float32)
+
+    matrix1, mask = cv2.findHomography(
+        cv_src, cv_dst, method=cv2.RANSAC, ransacReprojThreshold=1
+    )
+
+    # Warp source image into destination image coordinates
+    warped1 = cv2.warpPerspective(src_image, matrix1, (3024, 4032))
+
+    fig, ax = plt.subplots()
+    ax.imshow(warped1)
+    ax.set_title("OpenCV Warped Image (pre-ransac)")
 
     inlier_points = inliers == True
     inlier_src_matches = src_matches[inlier_points]
@@ -409,6 +434,31 @@ def transform(src_matches, dst_matches, src_image, dst_image, seed):
     inlier_matches = np.column_stack(
         (np.arange(len(inlier_src_matches)), np.arange(len(inlier_dst_matches)))
     )
+
+    print("First RANSAC src marker position: ", inlier_src_matches[0])
+
+    print(
+        "First RANSAC src marker position, after transform: ",
+        transform_model(inlier_src_matches[0]),
+    )
+
+    print(
+        "First RANSAC dst marker position (desired): ",
+        transform_model(inlier_dst_matches[0]),
+    )
+
+    cv_src_inliers = inlier_src_matches[:, [1, 0]].astype(np.float32)
+    cv_dst_inliers = inlier_dst_matches[:, [1, 0]].astype(np.float32)
+
+    matrix2, mask = cv2.findHomography(cv_src_inliers, cv_dst_inliers, method=0)
+
+    # Warp source image into destination image coordinates
+    warped2 = cv2.warpPerspective(src_image, matrix2, (3024, 4032))
+
+    fig, ax = plt.subplots()
+    ax.imshow(warped2)
+    ax.set_title("OpenCV Warped Image (post-ransac)")
+
     check_feature_matches(
         src_image,
         dst_image,

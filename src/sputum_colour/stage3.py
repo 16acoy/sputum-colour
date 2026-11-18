@@ -5,7 +5,10 @@ from pathlib import Path
 
 import pandas as pd
 
+from sputum_colour.performance import configure_performance_logging, monitored
 
+
+@monitored
 def _average_stage_metrics(intermediate_results_dir: Path, stage: int) -> pd.Series:
     """Average each metric across the per-photo CSVs for one pipeline stage."""
     csv_paths = sorted(
@@ -34,12 +37,15 @@ def _average_stage_metrics(intermediate_results_dir: Path, stage: int) -> pd.Ser
     return averages
 
 
+@monitored
 def main(results_dir):
     """Write the pipeline's averaged evaluation metrics and clear intermediates."""
     if results_dir is None:
         results_path = Path(__file__).resolve().parents[2] / "results"
     else:
         results_path = Path(results_dir)
+
+    configure_performance_logging(results_path)
 
     intermediate_results_dir = results_path / "intermediate_results"
     if not intermediate_results_dir.is_dir():

@@ -9,7 +9,14 @@ import matplotlib.pyplot as plt
 import pickle
 import numpy as np
 
+from sputum_colour.performance import (
+    configure_performance_logging,
+    measure_each,
+    monitored,
+)
 
+
+@monitored
 def main(
     sample_range,
     crop,
@@ -30,6 +37,7 @@ def main(
     results_dir="/Users/ameliecoy/GitRepos/sputum-colour/results",
     reg_method="feature_detection",
 ):
+    configure_performance_logging(results_dir)
 
     cv2.setRNGSeed(seed)
 
@@ -55,7 +63,7 @@ def main(
     else:
         print("sample range not valid")
 
-    for i in sample_range_list:
+    for i in measure_each(sample_range_list, "stage1.image"):
         file_pair = all_files[i]
         src_image = file_pair[0]
         src_image_grey = file_pair[1]

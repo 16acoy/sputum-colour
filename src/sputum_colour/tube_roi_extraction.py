@@ -9,7 +9,10 @@ import itertools
 import pickle
 from skimage.transform import warp
 
+from sputum_colour.performance import monitored
 
+
+@monitored
 def get_oriented_lines(lines_in_tube_mask, orientation_tolerance_angles):
     vertical_lines = []
     horizontal_lines = []
@@ -54,6 +57,7 @@ def get_oriented_lines(lines_in_tube_mask, orientation_tolerance_angles):
 
 
 # Calculate average distance between all lines
+@monitored
 def get_average_distance(
     line_type, lines
 ):  # lines = list of [y_coords, x_coords] (or their keys if need dict of atributes)
@@ -144,6 +148,7 @@ def get_average_distance(
     return pair_distances, pair_midpoints
 
 
+@monitored
 def get_valid_line_pairs(pair_distances, t_low, t_high):
 
     # If average distance between any pair is = known pixels, add to valid lines
@@ -157,6 +162,7 @@ def get_valid_line_pairs(pair_distances, t_low, t_high):
     return key_pairs_valid
 
 
+@monitored
 def plot_valid_lines(image, lines, key_pairs_valid):
 
     key_lines_valid = set(itertools.chain(*key_pairs_valid))  # list of valid keys
@@ -218,6 +224,7 @@ def choose_final_valid_midpoint(key_pairs_valid, lines, pair_midpoints):
 #################
 
 
+@monitored
 def get_valid_tube_midpoint(
     image,
     lines_in_tube_mask,
@@ -276,6 +283,7 @@ def get_valid_tube_midpoint(
     )
 
 
+@monitored
 def tube_to_tube_translate(src_midpoint_pixel, target_image):
     # Find diff between src tube midpoint and target tube midpoint - translate target mask to align values
 
@@ -304,6 +312,7 @@ def tube_to_tube_translate(src_midpoint_pixel, target_image):
     return translated_mask
 
 
+@monitored
 def transform_predicted_roi(model_filename, translated_mask):
     loaded_model = None
     try:
@@ -326,6 +335,7 @@ def transform_predicted_roi(model_filename, translated_mask):
     return transformed_mask
 
 
+@monitored
 def final_roi_extraction(image, translated_mask):
     # target_roi_mask = target_roi_mask.astype("uint8")
 
@@ -347,6 +357,7 @@ def final_roi_extraction(image, translated_mask):
     return final_roi
 
 
+@monitored
 def get_final_eval_metrics(final_roi_predicted, final_roi_ground_truth):
 
     y_true = final_roi_ground_truth.flatten() > 0

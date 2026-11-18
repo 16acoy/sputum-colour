@@ -9,7 +9,10 @@ import json
 import os
 import matplotlib.pyplot as plt
 
+from sputum_colour.performance import monitored
 
+
+@monitored
 def imread_compatible(path, printit=False):
     img = cv2.imread(str(path))
     img_grey = cv2.imread(str(path), cv2.IMREAD_GRAYSCALE)
@@ -39,6 +42,7 @@ def imread_compatible(path, printit=False):
         return None, None
 
 
+@monitored
 def resize_image_to_ref(image_in, h_target, w_target):
     is_color = image_in.ndim == 3
     if is_color:
@@ -115,6 +119,7 @@ def get_lighting_location(filename):
 
 
 # Extract metadata from image file
+@monitored
 def extract_metadata(
     file_num, filename, dir_path, site, photographer, lighting_location
 ):
@@ -179,6 +184,7 @@ def extract_metadata(
 
 
 # Load label annotation data from JSON files
+@monitored
 def load_label_json_file(path_labels):
     data = json.load(open(path_labels))
     try:
@@ -201,6 +207,7 @@ def get_point_array(x_points, y_points):
     return point_array
 
 
+@monitored
 def get_region_mask(target_image, vertices_df_row, num_regions=1):
     # Retrieve polyline points and store in numpy array of (x,y) coords
     masks = []
@@ -246,6 +253,7 @@ def get_region_mask(target_image, vertices_df_row, num_regions=1):
 ######################
 
 
+@monitored
 def data_collection():
     paths_df = pd.read_csv("../files/paths.csv")
     target_image_path = paths_df[paths_df["path_type"] == "target_image_raw"].iloc[0][
@@ -301,6 +309,7 @@ def data_collection():
     return (dst_image, dst_image_grey), all_files, all_metadata
 
 
+@monitored
 def get_rough_masks(target_image):
 
     paths_df = pd.read_csv("../files/paths.csv")
@@ -319,6 +328,7 @@ def get_rough_masks(target_image):
     return tube_target_mask, card_target_mask
 
 
+@monitored
 def get_rough_masks_2(target_image):
 
     paths_df = pd.read_csv("../files/paths.csv")
@@ -337,6 +347,7 @@ def get_rough_masks_2(target_image):
     return roi_mask, midpoint
 
 
+@monitored
 def get_roi_ground_truth_label(filename, site, target_image, paths_df):
     if site == "mcr_clinic":
         annotations_file = paths_df[paths_df["path_type"] == "rg_roi_labels"].iloc[0][
