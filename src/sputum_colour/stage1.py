@@ -94,7 +94,7 @@ def main(
             ax.set_title("Registered Image")
 
         elif reg_method == "feature_detection":
-            if crop == True:
+            if crop != None:
                 (
                     src_matches,
                     dst_matches,
@@ -104,6 +104,7 @@ def main(
                 ) = register_images.feature_match_with_crop(
                     src_image_grey_processed,
                     dst_image_grey_processed,
+                    crop,
                     descriptor_type,
                     orb_fast_n,
                     orb_fast_threshold,

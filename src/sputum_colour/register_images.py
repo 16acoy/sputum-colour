@@ -4,7 +4,8 @@ import numpy as np
 from skimage.feature import ORB, match_descriptors, plot_matched_features
 from skimage.measure import ransac
 from skimage.transform import ProjectiveTransform, warp
-from skimage.util import crop, img_as_ubyte
+from skimage import util
+from skimage.util import img_as_ubyte
 from skimage.morphology import dilation, closing
 
 from sputum_colour.performance import monitored
@@ -30,14 +31,21 @@ def detect_features(
             }.items()
             if value is not None
         }
-        print("before doing orb")
-        orb = ORB(n_keypoints=250, **orb_params)
-        print("after doing orb")
 
-        # Detect features and descriptors
-        orb.detect_and_extract(image)
+        # Detect features and descriptors - reduce fast_threshold if none found
+        for tries in range(3):
+            try:
+                orb = ORB(n_keypoints=250, **orb_params)
+                orb.detect_and_extract(image)
+            except RuntimeError:
+                orb_params['fast_threshold'] -= 0.01
+
         keypoints = orb.keypoints
         descriptors = orb.descriptors
+
+        if len(keypoints) == 0:
+            pass
+            # Fallback to failure if needed??
 
         if filter_out_clumps:
             dist = 200
@@ -113,7 +121,7 @@ def compute_transformation(src_matches, dst_matches, seed):
         (src_matches, dst_matches),
         ProjectiveTransform,
         min_samples=4,
-        residual_threshold=1,
+        residual_threshold=2,
         max_trials=2000,
         rng=seed,
     )
@@ -281,6 +289,7 @@ def feature_match(
 def feature_match_with_crop(
     src_image,
     dst_image,
+    crop,
     descriptor_type,
     orb_fast_n,
     orb_fast_threshold,
@@ -289,12 +298,56 @@ def feature_match_with_crop(
     feature_location_constraint,
 ):
 
-    # src_crop = ((130, 130), (130, 130))
-    dst_crop = ((120, 120), (120, 200))
-    # cropped_src_image = crop(src_image, src_crop)
-    print("before crop")
-    cropped_dst_image = crop(dst_image, dst_crop)
-    print("after crop")
+    if crop == 'fixed':
+
+        # src_crop = ((130, 130), (130, 130))
+        dst_crop = ((120, 120), (120, 200))
+        # cropped_src_image = crop(src_image, src_crop)
+        print("before crop")
+        cropped_dst_image = util.crop(dst_image, dst_crop)
+        print("after crop")
+
+    elif crop == 'edge_detect':
+        edge_image = cv2.Canny(
+            src_image,
+            threshold1=10,
+            threshold2=50,
+        )
+
+        fig, ax = plt.subplots()
+        ax.imshow(edge_image)
+        ax.set_title("Edge Image")
+
+
+        all_lines = cv2.HoughLinesP(
+            edge_image,
+            rho=1.0,
+            theta=0.017453292519943295,
+            threshold=35,
+            minLineLength=100,
+            maxLineGap=3000
+        )
+
+        src_copy = src_image.copy()
+
+        # Draw all hough lines
+        for line in all_lines:
+            x1, y1, x2, y2 = line.tolist()
+            cv2.line(src_copy, (x1, y1), (x2, y2), (0, 0, 0), 3)
+
+        fig, ax = plt.subplots()
+        ax.imshow(cv2.cvtColor(src_copy, cv2.COLOR_BGR2RGB))
+        ax.set_title("All hough lines Image")
+
+
+        line_lengths = []
+        for line in all_lines:
+            x1, y1, x2, y2 = line.tolist()
+            length = np.sqrt(((x1 - x2)**2) + ((y1 - y2)**2))
+            line_lengths.append(length)
+            print(length)
+
+        # TODO - Sort return type and how its passed down
 
     if feature_location_constraint == None:
         src_descriptors, src_keypoints = detect_features(
