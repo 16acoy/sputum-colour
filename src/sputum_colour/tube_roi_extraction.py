@@ -324,13 +324,9 @@ def transform_predicted_roi(model_filename, translated_mask):
     except Exception as e:
         print(f"Error loading model: {e}")
 
-    transformed_mask = warp(
-        translated_mask,
-        loaded_model,
-        output_shape=translated_mask.shape,
-        preserve_range=False,
-    )
-    transformed_mask = img_as_ubyte(transformed_mask)
+    transformed_mask = cv2.warpPerspective(translated_mask, cv2.invert(loaded_model)[1], (translated_mask.shape[1], translated_mask.shape[0]))
+
+    #transformed_mask = img_as_ubyte(transformed_mask)
 
     return transformed_mask
 

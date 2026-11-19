@@ -25,6 +25,8 @@ def main(
     orb_fast_threshold,
     orb_harris_k,
     filter_out_clumps,
+    clump_dist,
+    clump_num_close,
     feature_location_constraint,
     feature_match_max_distance,
     feature_match_max_ratio,
@@ -94,41 +96,22 @@ def main(
             ax.set_title("Registered Image")
 
         elif reg_method == "feature_detection":
-            if crop != None:
-                (
-                    src_matches,
-                    dst_matches,
-                    num_keypoints,
-                    avg_num_of_matches_per_dst_keypoint,
-                    fig,
-                ) = register_images.feature_match_with_crop(
-                    src_image_grey_processed,
-                    dst_image_grey_processed,
-                    crop,
-                    descriptor_type,
-                    orb_fast_n,
-                    orb_fast_threshold,
-                    orb_harris_k,
-                    filter_out_clumps,
-                    feature_location_constraint,
-                )
-            else:
-                (
-                    src_matches,
-                    dst_matches,
-                    num_keypoints,
-                    avg_num_of_matches_per_dst_keypoint,
-                    fig,
-                ) = register_images.feature_match(
-                    src_image_grey_processed,
-                    dst_image_grey_processed,
-                    descriptor_type,
-                    orb_fast_n,
-                    orb_fast_threshold,
-                    orb_harris_k,
-                    filter_out_clumps,
-                    feature_location_constraint,
-                )
+            (src_matches,
+            dst_matches,
+            num_keypoints,
+            avg_num_of_matches_per_dst_keypoint,
+            fig) = register_images.feature_match(src_image_grey_processed,
+                                                dst_image_grey_processed,
+                                                crop,
+                                                descriptor_type,
+                                                orb_fast_n,
+                                                orb_fast_threshold,
+                                                orb_harris_k,
+                                                filter_out_clumps,
+                                                clump_dist,
+                                                clump_num_close,
+                                                feature_location_constraint)
+
 
             # Projective transform of the COLOUR images
             transformed_image, transform_model = register_images.transform(
